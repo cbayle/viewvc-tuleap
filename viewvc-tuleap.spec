@@ -9,7 +9,7 @@
 Summary: Web-interface for CVS and Subversion version control repositories
 Name: viewvc-%{PKG_NAME}
 Version: 1.0.7
-Release: 4
+Release: 5
 Provides: %{app_name}
 #Obsoletes: %{app_name}
 License: BSD
@@ -29,7 +29,7 @@ BuildRoot: %{_tmppath}/%{app_name}-%{version}-%{release}-root
 BuildArch: noarch
 BuildRequires: python >= 1.5.2
 Requires: httpd, python >= 1.5.2
-Requires: tuleap, MySQL-python
+Requires: tuleap, MySQL-python, enscript
 Obsoletes: viewcvs
 Provides: viewcvs = %{version}-%{release}
 Conflicts: viewvc-httpd
@@ -137,6 +137,9 @@ find %{buildroot}%{_datadir}/viewvc/lib -type f -name "*.pyc" | xargs %{__rm} -f
 %attr(644, %{codendi_user}, %{codendi_group}) %config(noreplace) %{confdir}/cvsgraph.conf
 
 %changelog
+* Thu Mar 29 2012 Manuel Vacelet <manuel.vacelet@enalean.com> - 1.0.7-4
+- Add dependency on enscript
+
 * Mon Aug 29 2011 Manuel Vacelet <manuel.vacelet@enalean.com> - 1.0.7-4
 - Add dependency on Mysql-python (req after tuleap db patch)
  
