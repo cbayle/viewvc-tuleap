@@ -1,0 +1,50 @@
+#!/usr/bin/make -f
+
+confdir = /etc/tuleap/conf
+
+%:
+	dh $@ --with python2
+
+override_dh_auto_install:
+	python viewvc-install --destdir="debian/viewvc-tuleap" --prefix="/usr/share/viewvc"
+	rm -rf debian/viewvc-tuleap/usr/share/viewvc/bin/mod_python
+	perl -pi \
+	    -e 's|/usr/local/bin/python|/usr/bin/python|g;' \
+	    -e 's|\s*/usr/bin/env python|/usr/bin/python|g;' \
+	    -e 's|CONF_PATHNAME =.*|CONF_PATHNAME = r"$(confdir)/viewvc.conf"|g;' \
+	    $$(find debian/viewvc-tuleap/usr/share/viewvc/ -type f)
+	# Patches are applied during install, to avoid compilation issues
+	(BUILDDIR=`pwd`; cd debian/viewvc-tuleap/usr/share/viewvc/; \
+	patch -p1 viewvc.conf $$BUILDDIR/debian/patches/viewvc-1.0.5-conf.codendi.patch; \
+	patch -p1 < $$BUILDDIR/debian/patches/viewvc-1.0.5-templates.codendi.patch; \
+	patch -p1 < $$BUILDDIR/debian/patches/viewvc-1.0.5-scripts.codendi.patch)
+	# Install CGI's to www directory
+	mkdir -p debian/viewvc-tuleap/usr/lib/cgi-bin
+	install -p -m0755 debian/viewvc-tuleap/usr/share/viewvc/bin/cgi/viewvc.cgi \
+			  debian/viewvc-tuleap/usr/lib/cgi-bin/
+	rm -rf debian/viewvc-tuleap/usr/share/viewvc/bin/cgi
+	### Fix paths in configuration
+	perl -pi \
+	    -e 's|templates/|/usr/share/viewvc/templates/|g;' \
+	    -e 's|^#docroot = .*|docroot = /viewvc-static|;' \
+	    -e 's|^cvsgraph_conf = .*|cvsgraph_conf = $(confdir)/cvsgraph.conf|;' \
+	    debian/viewvc-tuleap/usr/share/viewvc/viewvc.conf
+	### Install config to sysconf directory
+	install -Dp -m0644 debian/viewvc-tuleap/usr/share/viewvc/viewvc.conf debian/viewvc-tuleap$(confdir)/viewvc.conf
+	rm -f debian/viewvc-tuleap/usr/share//viewvc/viewvc.conf
+	install -Dp -m0644 debian/viewvc-tuleap/usr/share/viewvc/cvsgraph.conf debian/viewvc-tuleap$(confdir)/cvsgraph.conf
+	rm -f debian/viewvc-tuleap/usr/share/viewvc/cvsgraph.conf
+	### Remove standard styles that conflict with Codendi styles
+	#note: 'undef $/' is needed to read the whole file at once, for multiline matching
+	perl -i -e 'undef $/; while(<>) {s/Standard.*Navigation/Navigation/s;print;}' debian/viewvc-tuleap/usr/share/viewvc/templates/docroot/styles.css
+	### Set mode 755 on executable scripts
+	grep -rl '^#!' debian/viewvc-tuleap/usr/share/viewvc | xargs chmod 0755
+	### Drop unnecessary license file
+	rm -f debian/viewvc-tuleap/usr/share/viewvc/templates-contrib/viewsvn/templates/docroot/images/tortoisesvn/license.txt
+
+override_dh_python2:
+	dh_python2 /usr/share/viewvc/lib
+
+override_dh_fixperms:
+	dh_fixperms
+	chown -R www-data:www-data debian/viewvc-tuleap$(confdir)

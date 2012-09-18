@@ -1,0 +1,2 @@
+viewvc-tools.patch
+# The remaining patches are applied at build time to avoid compilation issues

@@ -1,0 +1,22 @@
+Source: viewvc-tuleap
+Section: vcs
+Priority: optional
+Maintainer: Raphaël Hertzog <hertzog@debian.org>
+Build-Depends: debhelper (>= 9), python (>= 2.6.6-3~)
+Standards-Version: 3.9.3
+Homepage: http://www.viewvc.org/
+
+Package: viewvc-tuleap
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, python-subversion, python-mysqldb,
+ cvs | subversion, rcs, mime-support, enscript, python-egenix-mxdatetime
+Conflicts: viewvc
+Provides: viewvc
+Description: Web-interface for CVS and Subversion version control repositories
+ ViewVC is a browser interface for CVS and Subversion version control 
+ repositories. It generates templatized HTML to present navigable 
+ directory, revision, and change log listings. It can display specific 
+ versions of files as well as diffs between those versions. Basically, 
+ ViewVC provides the bulk of the report-like functionality you expect out 
+ of your version control tool, but much more prettily than the average 
+ textual command-line program output.
