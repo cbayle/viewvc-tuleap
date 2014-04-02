@@ -8,7 +8,7 @@ Homepage: http://www.viewvc.org/
 
 Package: viewvc-tuleap
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-subversion, python-mysqldb,
+Depends: ${misc:Depends}, python (>= 2.6.6-3~), python-subversion, python-mysqldb,
  cvs | subversion, rcs, mime-support, enscript, python-egenix-mxdatetime
 Conflicts: viewvc
 Provides: viewvc
